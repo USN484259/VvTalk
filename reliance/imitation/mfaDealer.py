@@ -101,6 +101,9 @@ offset = 0  # seconds
 
 class Mfa:
     def __init__(self, wav_filename, seg_tg_name, py, text_in, install=False, id_name=None):
+        if sys.platform != "win32":
+            raise "Not ported to {} yet".format(sys.platform)
+
         self.wav_filename = wav_filename
 
         self.seg_tg_name = seg_tg_name

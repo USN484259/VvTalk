@@ -5,9 +5,13 @@ from tkinter import filedialog
 from tkinter import ttk, messagebox
 from copy import deepcopy
 import re
-from winsound import MessageBeep
 import os
 import reliance
+
+try:
+    from winsound import MessageBeep
+except:
+    pass
 
 VERSION = reliance.global_vars.VERSION
 VERSION_NO = reliance.global_vars.VERSION_NO
@@ -15,7 +19,12 @@ VERSION_NO = reliance.global_vars.VERSION_NO
 title_name = 'vvTalk (个人非商用)'
 
 def tkinter_gui(core: reliance.core.TalkCore):
-    core.subprocess_finish_callback = MessageBeep
+    try:
+        MessageBeep
+        core.subprocess_finish_callback = MessageBeep
+    except:
+        pass
+
     root = Tk()
     root.title('{} - {}'.format(core.project_file_name(), title_name))
     fr1 = Frame(root)
@@ -350,7 +359,13 @@ def tkinter_gui(core: reliance.core.TalkCore):
 
     def help_file():
         if os.path.exists('vvTalk使用说明.pdf'):
-            os.startfile('vvTalk使用说明.pdf')
+            if sys.platform == "win32":
+                os.startfile('vvTalk使用说明.pdf')
+            elif sys.platform == "darwin":
+                os.system("open vvTalk使用说明.pdf")
+            else:
+                os.system("xdg-open vvTalk使用说明.pdf")
+
         else:
             messagebox.showerror('错误', '未找到帮助文件\nvvTalk使用说明.pdf\n请重新下载或向作者咨询啦')
 
@@ -388,7 +403,10 @@ def tkinter_gui(core: reliance.core.TalkCore):
             idx = len(tv.get_children())
         else:
             idx = tv.index(ids[-1]) + 1
-        root.attributes('-disabled', 1)
+        try:
+            root.attributes('-disabled', 1)
+        except:
+            pass
         tl = Toplevel(root)
         tl.title('批量插入')
 
@@ -409,8 +427,11 @@ def tkinter_gui(core: reliance.core.TalkCore):
             close()
 
         def close():
-            root.attributes('-disabled', 0)
-            root.focus()
+            try:
+                root.attributes('-disabled', 0)
+                root.focus()
+            except:
+                pass
             tl.destroy()
 
         tl.protocol('WM_DELETE_WINDOW', close)
@@ -429,7 +450,10 @@ def tkinter_gui(core: reliance.core.TalkCore):
             idx = len(tv.get_children())
         else:
             idx = tv.index(ids[-1]) + 1
-        root.attributes('-disabled', 1)
+        try:
+            root.attributes('-disabled', 1)
+        except:
+            pass
         tl = Toplevel(root)
         tl.title('插入文本')
 
@@ -446,8 +470,11 @@ def tkinter_gui(core: reliance.core.TalkCore):
             close()
 
         def close():
-            root.attributes('-disabled', 0)
-            root.focus()
+            try:
+                root.attributes('-disabled', 0)
+                root.focus()
+            except:
+                pass
             tl.destroy()
             try:
                 tv.selection_set(tv.get_children()[idx])
@@ -488,7 +515,10 @@ def tkinter_gui(core: reliance.core.TalkCore):
         ids = tv.selection()
         if not ids:
             return
-        root.attributes('-disabled', 1)
+        try:
+            root.attributes('-disabled', 1)
+        except:
+            pass
         id_ = ids[0]
         idx = tv.index(id_)
         content = core.sents.present_sent_idx(idx, False)['base'][0]
@@ -498,13 +528,19 @@ def tkinter_gui(core: reliance.core.TalkCore):
         tl.geometry(f'420x250+{int(root_loc[0]) + 100}+{int(root_loc[1]) + 50}')
 
         def close():
-            root.attributes('-disabled', 0)
-            root.focus()
+            try:
+                root.attributes('-disabled', 0)
+                root.focus()
+            except:
+                pass
             tl.destroy()
 
         tl.protocol('WM_DELETE_WINDOW', close)
-        tl.attributes('-toolwindow', 1)
-        tl.attributes('-topmost', 1)
+        try:
+            tl.attributes('-topmost', 1)
+            tl.attributes('-toolwindow', 1)
+        except:
+            pass
         txt = Text(tl, height=15, width=50)
         txt.insert('insert', content)
         # txt = Entry(tl, textvariable=content)
@@ -540,8 +576,11 @@ def tkinter_gui(core: reliance.core.TalkCore):
             # core.sents[idx][2] = ['', '']
             tv_update(chaos=False)
             core.need_save()
-            root.attributes('-disabled', 0)
-            root.focus()
+            try:
+                root.attributes('-disabled', 0)
+                root.focus()
+            except:
+                pass
             tl.destroy()
 
         txt.bind('<Return>', save)
@@ -552,23 +591,32 @@ def tkinter_gui(core: reliance.core.TalkCore):
         ids = tv.selection()
         if not ids:
             return
-        root.attributes('-disabled', 1)
+        try:
+            root.attributes('-disabled', 1)
+        except:
+            pass
         id_ = ids[0]
         idx = tv.index(id_)
         sent = core.sents.present_sent_idx(idx)
         content_chr = list(sent['base'][0])
         content_py = list(sent['base'][1])
         tl = Toplevel(root)
-        tl.attributes('-toolwindow', 1)
-        tl.resizable(0, 0)
-        tl.focus()
+        try:
+            tl.attributes('-toolwindow', 1)
+            tl.resizable(0, 0)
+            tl.focus()
+        except:
+            pass
         root_loc = root.geometry().split('+')[1:3]
         tl.geometry(f'270x600+{int(root_loc[0]) + 100}+{int(root_loc[1]) + 50}')
         tl.title('编辑拼音')
 
         def close():
-            root.attributes('-disabled', 0)
-            root.focus()
+            try:
+                root.attributes('-disabled', 0)
+                root.focus()
+            except:
+                pass
             tl.destroy()
 
         # content_chr = [str(i)+' '+ch for i, ch in enumerate(content_chr)]
@@ -658,8 +706,11 @@ def tkinter_gui(core: reliance.core.TalkCore):
                 else:
                     return
             # core.sents[idx][2] = ['', '']
-            root.attributes('-disabled', 0)
-            root.focus()
+            try:
+                root.attributes('-disabled', 0)
+                root.focus()
+            except:
+                pass
             tv_update(chaos=False)
             core.need_save()
             tl.destroy()
@@ -681,11 +732,17 @@ def tkinter_gui(core: reliance.core.TalkCore):
             if callback is not None:
                 callback()
             return
-        root.attributes('-disabled', 1)
+        try:
+            root.attributes('-disabled', 1)
+        except:
+            pass
         tl = Toplevel(root)
         tl.title('自动调教选项')
-        tl.attributes('-toolwindow', 1)
-        tl.attributes('-topmost', 1)
+        try:
+            tl.attributes('-topmost', 1)
+            tl.attributes('-toolwindow', 1)
+        except:
+            pass
         # root_loc = root.geometry().split('+')[1:3]
         tl.geometry(f'200x70+800+400')
         tl.resizable(width=False, height=False)
@@ -698,8 +755,11 @@ def tkinter_gui(core: reliance.core.TalkCore):
 
         def close():
             root.unbind('<Button-1>')
-            root.attributes('-disabled', 0)
-            root.focus()
+            try:
+                root.attributes('-disabled', 0)
+                root.focus()
+            except:
+                pass
             tl.destroy()
 
         tl.protocol('WM_DELETE_WINDOW', close)
@@ -743,7 +803,10 @@ def tkinter_gui(core: reliance.core.TalkCore):
         ids = tv.selection()
         if not ids:
             return
-        root.attributes('-disabled', 1)
+        try:
+            root.attributes('-disabled', 1)
+        except:
+            pass
         id_ = ids[0]
         idx = tv.index(id_)
         block_inf = core.sents.blocked_inf_idx(idx)
@@ -755,7 +818,10 @@ def tkinter_gui(core: reliance.core.TalkCore):
                 manual()
                 return
             else:
-                root.attributes('-disabled', 0)
+                try:
+                    root.attributes('-disabled', 0)
+                except:
+                    pass
                 return
         # text = tv.item(id_)['values'][0]
         sent = core.sents.present_sent_idx(idx)
@@ -841,7 +907,10 @@ def tkinter_gui(core: reliance.core.TalkCore):
             tv_update(chaos=False)
 
         def before_close():
-            root.attributes('-disabled', 0)
+            try:
+                root.attributes('-disabled', 0)
+            except:
+                pass
 
         wavname = core.file_relative_path('wav', original=sent['ref'][0])
         tgname = core.file_relative_path('TextGrid', original=sent['ref'][1])
@@ -934,7 +1003,12 @@ def tkinter_gui(core: reliance.core.TalkCore):
             if core.settings.get('save_dub_after_output', 0):
                 core.output_dub(idxs)
             if core.settings.get('open_after_output', 0):
-                os.startfile(dest)
+                if sys.platform == "win32":
+                    os.startfile(dest)
+                elif sys.platform == "darwin":
+                    os.system("open " + '\"' + dest + '\"')
+                else:
+                    os.system("xdg-open " + '\"' + dest + '\"')
 
         auto(ids=ids_to_auto, callback=execute_output)
 
@@ -960,7 +1034,10 @@ def tkinter_gui(core: reliance.core.TalkCore):
                 set_intensity()
                 return
             else:
-                root.attributes('-disabled', 0)
+                try:
+                    root.attributes('-disabled', 0)
+                except:
+                    pass
                 return
         default = core.settings['loudness_dir']
         location = filedialog.askopenfilename(title='打开',
@@ -978,7 +1055,12 @@ def tkinter_gui(core: reliance.core.TalkCore):
         core.change_settings_save({'save_dub_after_output': dub_var.get()})
 
     def open_outputs():
-        os.system('start outputs')
+        if sys.platform == 'win32':
+            os.system('start outputs')
+        elif sys.platform == "darwin":
+            os.system("open outputs")
+        else:
+            os.system("xdg-open outputs")
 
     fr3 = Frame(root)
     b_text = Button(fr3, text='编辑文本', command=edit_text)  # 保存后自动生成拼音

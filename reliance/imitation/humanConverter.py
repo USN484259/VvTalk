@@ -16,9 +16,12 @@ import os
 import threading
 import multiprocessing
 import wave
-import winsound
 import reliance.imitation.tts
 import multiprocessing.pool
+try:
+    import winsound
+except:
+    pass
 
 JULIUS_PATH = 'C://Windows//julius.exe'
 
@@ -67,7 +70,7 @@ class ConverterGUI:
         else:
             self.root = Toplevel(self.gui_root)
             self.individual = False
-            self.settings_relative_path = core.settings_relative_path + r'\converter_setting'
+            self.settings_relative_path = os.path.join(core.settings_relative_path, 'converter_setting')
         try:
             with open(self.settings_relative_path, 'rb') as f:
                 pass
@@ -327,7 +330,10 @@ class ConverterGUI:
         self.gui_root.focus()
 
     def _record(self):
-        self.root.attributes('-disabled', 1)
+        try:
+            self.root.attributes('-disabled', 1)
+        except:
+            pass
         start_time = [float()]
         boundaries = []
         boundText = StringVar(value='等待开始')
@@ -450,7 +456,10 @@ class ConverterGUI:
         #         boundText.set('标记数：{}'.format(len(boundaries)))
 
         def exit_():
-            self.root.attributes('-disabled', 0)
+            try:
+                self.root.attributes('-disabled', 0)
+            except:
+                pass
             bMaster['state'] = NORMAL
             self.bo['state'] = NORMAL
             recorder.abort()
@@ -495,7 +504,7 @@ class ConverterGUI:
         create_seg_tg(self.filenames['wav'], self.filenames['segment'], [self.text], just_len=len(self.py))
 
     def _tts(self, in_pipeline=False):
-        location = 'misc/temp/tts_temp/tts.wav'
+        location = os.path.join('misc', 'temp', 'tts_temp', 'tts.wav')
         if not os.path.exists(os.path.dirname(location)):
             os.makedirs(os.path.dirname(location))
         reliance.imitation.tts.render(self.text, location)
@@ -547,11 +556,17 @@ class ConverterGUI:
         self.root.focus()
 
     def _replay_mark(self):
-        self.root.attributes('-disabled', 1)
+        try:
+            self.root.attributes('-disabled', 1)
+        except:
+            pass
         if not os.path.exists(self.filenames['wav']):
             messagebox.showerror('没有录音', '还没有录音文件，请先录音或导入')
-            self.root.focus()
-            self.root.attributes('-disabled', 0)
+            try:
+                self.root.focus()
+                self.root.attributes('-disabled', 0)
+            except:
+                pass
             return
         start_time = [float()]
         boundaries = []
@@ -732,7 +747,10 @@ class ConverterGUI:
                 boundText.set('标记数：{}'.format(len(boundaries)))
 
         def exit_():
-            self.root.attributes('-disabled', 0)
+            try:
+                self.root.attributes('-disabled', 0)
+            except:
+                pass
             bMaster['state'] = NORMAL
             self.bo['state'] = NORMAL
             player.stop()
@@ -741,6 +759,9 @@ class ConverterGUI:
         tl.protocol('WM_DELETE_WINDOW', exit_)
 
     def _auto_mark(self, in_pipeline=False):  # 直接覆盖手动标注
+        if sys.platform != "win32":
+            raise "Not ported to {} yet".format(sys.platform)
+
         if self.core.settings['forced_aligner'] == 'sppas' and not os.path.exists(JULIUS_PATH):
             os.system('start c://Windows')
             os.system('start misc')
@@ -801,7 +822,10 @@ class ConverterGUI:
             self.tg_need_create = False
             self.auto_marking = False
             self._make_tg(reopen=False, use_praat=False)
-            winsound.MessageBeep()
+            try:
+                winsound.MessageBeep()
+            except:
+                pass
 
         self.auto_marking = True
         if in_pipeline:
@@ -825,20 +849,29 @@ class ConverterGUI:
             tl.title('文本分段')
             root_loc = self.root.geometry().split('+')[1:3]
             tl.geometry(f'420x390+{int(root_loc[0]) + 100}+{int(root_loc[1]) + 50}')
-            self.root.attributes('-disabled', 1)
+            try:
+                self.root.attributes('-disabled', 1)
+            except:
+                pass
 
             with wave.open(self.filenames['wav'], 'r') as f:
                 length_second = f.getnframes() / f.getframerate()
             recommend = max(int(length_second / 15), 1)
 
             def close():
-                self.root.attributes('-disabled', 0)
-                self.root.focus()
+                try:
+                    self.root.attributes('-disabled', 0)
+                    self.root.focus()
+                except:
+                    pass
                 tl.destroy()
 
             tl.protocol('WM_DELETE_WINDOW', close)
-            tl.attributes('-toolwindow', 1)
-            tl.attributes('-topmost', 1)
+            try:
+                tl.attributes('-topmost', 1)
+                tl.attributes('-toolwindow', 1)
+            except:
+                pass
             txt = Text(tl, height=13, width=50, spacing3=12)
             txt.insert('insert', content)
             txt.pack(fill=BOTH)
@@ -893,7 +926,10 @@ class ConverterGUI:
                 self.set_filename_func(dest=self.dest, seg_tg=self.filenames['segment'])
                 edit_seg()
 
-                self.root.attributes('-disabled', 0)
+                try:
+                    self.root.attributes('-disabled', 0)
+                except:
+                    pass
                 tl.destroy()
 
                 # create another Toplevel

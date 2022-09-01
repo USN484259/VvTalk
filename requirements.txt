@@ -38,5 +38,4 @@ jieba
 pypinyin
 pyworld
 pydub
-pypiwin32
 pypinyin-dict

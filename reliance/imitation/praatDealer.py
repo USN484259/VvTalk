@@ -74,6 +74,8 @@ def start_edit(wav_path: str, tg_path: str, new_tg: bool, reopen: bool):
 
 class PraatScript:
     def __init__(self, id_name=None):
+        if sys.platform != "win32":
+            raise "Not ported to {} yet".format(sys.platform)
         """
         param id_name: 区分不同子进程下调用的praat, 主进程则为None
         """

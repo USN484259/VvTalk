@@ -30,14 +30,15 @@ class TalkCore:
 
         self.no_projects = no_projects
         self.root_path = os.getcwd()
-        self.temp_relative_path = r'misc\temp'
-        self.settings_relative_path = r'misc'
-        for path in (r'\projects', r'\resources', r'\outputs', r'\misc', '\\' + self.temp_relative_path,):
-            # '\\' + self.temp_relative_path + r'\sppas_temp'):
-            mkdir(self.root_path + path)
+        self.temp_relative_path = os.path.join('misc', 'temp')
+        self.settings_relative_path = 'misc'
+
+        for path in ("", "projects", "resources", "outputs", "misc", self.temp_relative_path):
+            mkdir(os.path.join(self.root_path, path))
+
         self.default_settings = reliance.global_vars.settings
         try:
-            with open(self.settings_relative_path + r'\setting', 'rb') as f:
+            with open(os.path.join(self.settings_relative_path, 'setting'), 'rb') as f:
                 self.default_settings.update(pickle.load(f))
                 self.settings = self.default_settings
         except FileNotFoundError:
@@ -146,7 +147,7 @@ class TalkCore:
             folder = 'outputs'
         else:
             folder = 'resources'
-        folder_path = os.getcwd() + '\\' + folder
+        folder_path = os.path.join(os.getcwd(), folder)
         filenames = os.listdir(folder_path)
         related_nums = []
         if type_ in ('vsqx', 'srt', 'svp'):
@@ -196,10 +197,10 @@ class TalkCore:
         else:
             raise ValueError('variable type_ must be string: "vsqx", "srt", "wav", "TextGrid_segment" or "TextGrid"')
 
-        return folder + '\\' + aimed_name
+        return os.path.join(folder, aimed_name)
 
     def save_settings(self):
-        with open(self.settings_relative_path + r'\setting', 'wb') as f:
+        with open(os.path.join(self.settings_relative_path, 'setting'), 'wb') as f:
             pickle.dump(self.settings, f)
 
     def change_settings_save(self, settings: dict):
@@ -308,7 +309,7 @@ class TalkCore:
     def load_new_temp(self):
         self.new_data()
         self.temp_file = True
-        self.project_file_location = self.temp_relative_path + r'\temp.tyt'
+        self.project_file_location = os.path.join(self.temp_relative_path, 'temp.tyt')
         self.save(self.project_file_location)
         self.settings['last_file_location'] = self.project_file_location
         self.save_settings()
